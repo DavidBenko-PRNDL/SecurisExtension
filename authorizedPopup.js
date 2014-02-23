@@ -1,24 +1,25 @@
-var getting = $.get( "https://securis-debug.herokuapp.com/accounts.json", {
-        "auth_token": chrome.storage.local.get("auth_token", function(items) {
-            if(chrome.runtime.lastError)
-            {
-                /* error */
-                return;
-            }
-        }),
-        "auth_email": chrome.storage.local.get("auth_email", function(items) {
-            if(chrome.runtime.lastError)
-            {
-                /* error */
-                return;
-            }
-        })
+var authToken = "";
+var authEmail = "";
+
+chrome.storage.local.get('authToken', function(items) {
+        console.log(items.authToken);
+        authToken = items.authToken;
+    });
+chrome.storage.local.get('authEmail', function(items) {
+        console.log(items.authEmail);
+        authEmail = items.authEmail;
+    });
+
+var getting = $.get("https://securis-debug.herokuapp.com/accounts.json", {
+        "auth_token": authToken,
+        "auth_email": authEmail
     }, function(data) {
         console.log(data)
     });
 
 getting.error(function (data) {
-    window.location.replace("loginPopup.html")
+    //window.location.replace("loginPopup.html");
+    console.log("Failed")
 });
 
 //Open all links displayed on popup

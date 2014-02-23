@@ -13,10 +13,10 @@ function submitLogin() {
 	posting.success(function(data) {
 		if(data['success']) {
 			chrome.storage.local.set({
-				'authToken' : data[auth_token], 
-				'authEmail' : data[email]
+				'authToken' : data['auth_token'], 
+				'authEmail' : data['email']
 			}, function () {
-				message('Token saved');
+				console.log('Information saved');
 			});
 			window.location.replace("authorizedPopup.html")
 		}
