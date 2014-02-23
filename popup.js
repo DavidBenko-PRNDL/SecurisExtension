@@ -1,16 +1,17 @@
-function submitLogin() {
-	console.log("hello")
-	$.ajax({
-		type: "POST",
-		url: "https://securis-debug.herokuapp.com/api/sign_in",
-		data: {'user_login': $("#my_form").serialize()}
+function submitLogin(e) {
+	var params = {
+		"email":$("input[name=email]").val(),
+		"password":$("input[name=password]").val()
+	}
+
+	console.log(params);
+
+	$.post( "https://securis-debug.herokuapp.com/api/sign_in", {
+		"user_login":params
 	}, function(data) {
 		console.log(data)
 	});
-}
-
-function clickHandler(e) {
-	submitLogin();
+	return e.preventDefault();
 }
 
 function main() {
@@ -18,6 +19,7 @@ function main() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  document.querySelector('button').addEventListener('click', clickHandler);
+  //$("#my_form").addEventListener("submit",submitLogin(),false);
+  $("#my_form").submit(submitLogin);
   main();
 });

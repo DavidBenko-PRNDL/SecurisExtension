@@ -9,12 +9,16 @@
 <body>
 
 <form id="my_form" method="post">
-  Email: <input type="text" name="email" />
-  Password: <input type="password" name="password" />
+	<fieldset>
+		<label>Email:</label>
+		<input type="text" name="email" />
+		<label>Password:</label>
+		<input type="password" name="password" />
+		<input type="submit" value="login" />
+	</fieldset>  
 </form>
-<button type="button" id="submit">Login</button>
+
 <script src="jquery.min.js"></script>
 <script src="popup.js"></script>
 </body>
-
 </html>
