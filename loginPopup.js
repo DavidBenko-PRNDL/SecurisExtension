@@ -1,3 +1,4 @@
+// send login post request
 function submitLogin() {
 	var params = {
 		"email":$("input[name=email]").val(),
@@ -10,6 +11,7 @@ function submitLogin() {
 		console.log(data)
 	},"JSON");
 
+	// check if posting was successfull 
 	posting.success(function(data) {
 		if(data['success']) {
 			chrome.storage.local.set({
@@ -22,10 +24,9 @@ function submitLogin() {
 		}
 	});
 
+	// check if posting 401d for invalid login
 	posting.error(function(data) {
 		console.log(data); 
-		// Not returning correct data 
-		//(i.e: {"success":false,"message":"Error with your login or password"})
 		$("#results").html('Error with login or password.');
 	});
 
@@ -36,6 +37,7 @@ function main() {
 	// Init
 }
 
+// event listener for login button
 document.addEventListener('DOMContentLoaded', function () {
   $("#my_form").submit(submitLogin);
   main();

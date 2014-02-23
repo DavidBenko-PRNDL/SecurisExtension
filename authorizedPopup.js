@@ -1,7 +1,9 @@
 var authToken = "";
 var authEmail = "";
 
+// check if logged in by sending get request
 function sendGet() {
+    // async for local storage, ensure both have loaded prior to get request
     if (authToken.length > 0 && authEmail.length > 0) {
         var getting = $.get("https://securis-debug.herokuapp.com/accounts.json", {
                 "auth_token": authToken,
@@ -10,13 +12,14 @@ function sendGet() {
                 console.log(data)
             });
 
+        // if errors, incorrect auth_token or email, log in again
         getting.error(function (data) {
-            //window.location.replace("loginPopup.html");
-            console.log("Failed")
+            window.location.replace("loginPopup.html");
         });
     }
 }
 
+// load auth_token and email from local storage
 chrome.storage.local.get('authToken', function(items) {
         console.log(items.authToken);
         authToken = items.authToken;
