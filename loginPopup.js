@@ -12,7 +12,13 @@ function submitLogin() {
 
 	posting.success(function(data) {
 		if(data['success']) {
-			//do something
+			chrome.storage.local.set({
+				'authToken' : data[auth_token], 
+				'authEmail' : data[email]
+			}, function () {
+				message('Token saved');
+			});
+			window.location.replace("authorizedPopup.html")
 		}
 	});
 
@@ -31,7 +37,6 @@ function main() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  //$("#my_form").addEventListener("submit",submitLogin(),false);
   $("#my_form").submit(submitLogin);
   main();
 });
