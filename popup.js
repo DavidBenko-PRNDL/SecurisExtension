@@ -9,4 +9,15 @@ function submitLogin() {
 	});
 }
 
-document.getElementById('submit').onClick = submitLogin;
+function clickHandler(e) {
+	submitLogin();
+}
+
+function main() {
+	// Init
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelector('button').addEventListener('click', clickHandler);
+  main();
+});
