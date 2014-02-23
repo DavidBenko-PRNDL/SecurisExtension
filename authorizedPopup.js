@@ -20,13 +20,11 @@ function sendGet() {
 chrome.storage.local.get('authToken', function(items) {
         console.log(items.authToken);
         authToken = items.authToken;
-    }, function (){
         sendGet();
     });
 chrome.storage.local.get('authEmail', function(items) {
         console.log(items.authEmail);
         authEmail = items.authEmail;
-    }, functiom () {
         sendGet();
     });
 
