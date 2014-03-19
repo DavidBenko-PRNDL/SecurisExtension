@@ -1,34 +1,32 @@
-jQuery.fn.extend({
-    getPath: function () {
-        var path, node = this;
-        while (node.length) {
-            var realNode = node[0], name = realNode.localName;
-            if (!name) break;
-            name = name.toLowerCase();
+jQuery.fn.getPath = function () {
+    if (this.length != 1) throw 'Requires one element.';
 
-            var parent = node.parent();
+    var path, node = this;
+    while (node.length) {
+        var realNode = node[0], name = realNode.localName;
+        if (!name) break;
+        name = name.toLowerCase();
 
-            var sameTagSiblings = parent.children(name);
-            if (sameTagSiblings.length > 1) { 
-                allSiblings = parent.children();
-                var index = allSiblings.index(realNode) + 1;
-                if (index > 1) {
-                    name += ':nth-child(' + index + ')';
-                }
-            }
+        var parent = node.parent();
 
-            path = name + (path ? '>' + path : '');
-            node = parent;
+        var siblings = parent.children(name);
+        if (siblings.length > 1) { 
+            name += ':eq(' + siblings.index(realNode) + ')';
         }
 
-        return path;
+        path = name + (path ? '>' + path : '');
+        node = parent;
     }
-});
 
+    return path;
+};
 function findForms() {
 	return $('form').filter(function() {
-		$(this).find('input[type=password]').length > 0;
+		return $(this).find('input[type=password]').length > 0;
 	});
+}
+function getPasswordFields(form){
+	return $(form).find('input[type=password]');
 }
 
 // function to send GET request to search for domain
@@ -47,36 +45,16 @@ function searchAcccountsForURL(searchTerm) {
     getting.error(function (data) {
         console.log("Error: " + data);
     });
-    retrn dataArr;
+    return dataArr;
 }
-
-// array of password fields on website
-var passField = $('input[type=password]:visible');
-
-if (passField.length == 0) {
-    // no password fields on website, do nothing
-    console.log("no pw field");
+function fillPathWithValue(path,val){
+	$(path).val(val);
 }
-else if (passField.length == 1) {
-    // one password field, autofill
-    console.log("1 pw field");
-    // search accounts for domain of website
-    var currentURL = document.URL;
-    console.log(document.URL);
-    var accountArr = searchAcccountsForURL(currentURL);
-    if (accountArr.length == 0) {
-    	// no account saved for URL
-    }
-    else if (accountArr.length == 1) {
-    	// one saved account, autofill
-
-    }
-    else {
-    	// more than one account, show list of available accounts to autofill in menu
-    }
-}
-else {
-    // multiple password fields, offer to generate/save password
-    // in menu offer to autofill passwords saved, call searchAccountsForURL
-    console.log(passField.length.toString() + " pw filds")
-}
+findForms().find('input[type!=hidden],select').each(function(){
+	console.log("Path: " + $(this).getPath());
+	console.log("Value: " + $(this).val());
+});
+findForms().submit(function( event ) {
+  //event.preventDefault();
+});
+fillPathWithValue("html>body>div:eq(0)>div:eq(0)>div:eq(0)>div:eq(1)>div:eq(1)>form>fieldset>div:eq(0)>input ","Hello Fucking World");
