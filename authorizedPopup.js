@@ -1,16 +1,14 @@
 // check if logged in by sending get request
-function checkAuth(callback) {
+function checkAuth() {
     chrome.runtime.sendMessage({action_name: "checkAuth"}, function (response) {
-        console.log("here");
+        console.log(response);
+        ////
+        //// response is null... 
+        ////
         if (!response) {
-            console.log("response");
-            window.location.replace(loginPopup.html);
+            //window.location.replace("loginPopup.html");
         }
-        callback(response);
     });
-    ////
-    //// not waiting for response
-    ////
 }
 checkAuth();
 
@@ -45,6 +43,7 @@ $("#logoutButton").click(logout);
 function getAuthCreds(callback) {
     chrome.storage.local.get(['authToken', 'authEmail'], function (items) {
         if (chrome.runtime.lastError) {
+            console.log(chrome.runtime.lastError);
             window.location.replace("loginPopup.html");
             return;
         }

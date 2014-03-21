@@ -11,17 +11,19 @@ function verifyAuth() {
         });
 
         // if errors, incorrect auth_token or email, log in again
-        getting.error(function (data) {
+        getting.fail(function (data) {
         	console.log("false!");
             return false;
         });
-        return false;
-
         ////
-        //// Returning "undefined" rather than true and false
+        //// Not actually returning anything..just null
         ////
     });
 }
+
+console.log("test here");
+// returning undefined before GET request even made. 
+console.log(verifyAuth());
 
 // function to send POST request to create account
 function createAccount(account_attributes, field_attributes, callback) {
@@ -57,6 +59,10 @@ function createAutofill(attributes, callback) {
 // function to retrieve auth_token and auth_email from local storage
 function getAuthCreds(callback) {
     chrome.storage.local.get(['authToken', 'authEmail'], function (items) {
+        if (chrome.runtime.lastError) {
+            console.log(chrome.runtime.lastError);
+            return;
+        }
         callback(items);
     });
 }
@@ -70,11 +76,12 @@ function createAutofillCombination(account_attributes, field_attributes) {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action_name == "create") {
         createAutofillCombination(request.account, request.fields);
-        return true;
+        //return true;
     }
     else if (request.action_name == "checkAuth") {
-    	console.log(verifyAuth());
-    	return verifyAuth;
+        sendResponse(verifyAuth());
+        // return true keeps connection open for response
+    	return true;
     }
     else {
     	sendResponse({});
