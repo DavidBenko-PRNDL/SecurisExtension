@@ -1,5 +1,5 @@
 // function to verify if logged in
-function verifyAuth() {
+function verifyAuth(callback) {
     getAuthCreds(function (creds) {
         // async for local storage, ensure both have loaded prior to get request
         var getting = $.get("https://securis-debug.herokuapp.com/accounts.json", {
@@ -7,13 +7,13 @@ function verifyAuth() {
             "auth_email": creds.authEmail
         }, function (data) {
         	console.log("true!");
-            return true;
+             callback(true);
         });
 
         // if errors, incorrect auth_token or email, log in again
         getting.fail(function (data) {
         	console.log("false!");
-            return false;
+            callback(false);
         });
         ////
         //// Not actually returning anything..just null
@@ -79,7 +79,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         //return true;
     }
     else if (request.action_name == "checkAuth") {
-        sendResponse(verifyAuth());
+        
+        verifyAuth(function(auth){
+            sendResponse({verified: auth});
+        });
+        //sendResponse(verifyAuth());
         // return true keeps connection open for response
     	return true;
     }
