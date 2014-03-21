@@ -1,19 +1,18 @@
 // check if logged in by sending get request
-function sendGet() {
-    getAuthCreds(function (creds) {
-        // async for local storage, ensure both have loaded prior to get request
-        var getting = $.get("https://securis-debug.herokuapp.com/accounts.json", {
-            "auth_token": creds.authToken,
-            "auth_email": creds.authEmail
-        }, function (data) {});
-
-        // if errors, incorrect auth_token or email, log in again
-        getting.error(function (data) {
-            window.location.replace("loginPopup.html");
-        });
+function checkAuth(callback) {
+    chrome.runtime.sendMessage({action_name: "checkAuth"}, function (response) {
+        console.log("here");
+        if (!response) {
+            console.log("response");
+            window.location.replace(loginPopup.html);
+        }
+        callback(response);
     });
+    ////
+    //// not waiting for response
+    ////
 }
-sendGet();
+checkAuth();
 
 // function to send DELETE request to logout of chrome extension
 function logout() {

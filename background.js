@@ -1,3 +1,28 @@
+// function to verify if logged in
+function verifyAuth() {
+    getAuthCreds(function (creds) {
+        // async for local storage, ensure both have loaded prior to get request
+        var getting = $.get("https://securis-debug.herokuapp.com/accounts.json", {
+            "auth_token": creds.authToken,
+            "auth_email": creds.authEmail
+        }, function (data) {
+        	console.log("true!");
+            return true;
+        });
+
+        // if errors, incorrect auth_token or email, log in again
+        getting.error(function (data) {
+        	console.log("false!");
+            return false;
+        });
+        return false;
+
+        ////
+        //// Returning "undefined" rather than true and false
+        ////
+    });
+}
+
 // function to send POST request to create account
 function createAccount(account_attributes, field_attributes, callback) {
     getAuthCreds(function (creds) {
@@ -19,10 +44,7 @@ function createAccount(account_attributes, field_attributes, callback) {
 function createAutofill(attributes, callback) {
     getAuthCreds(function (creds) {
         $.post("https://securis-debug.herokuapp.com/account_autofills.json", {
-                "account": {
-                    "name": document.title,
-                    "account_fields_attributes": attributes
-                },
+                "account_autofill": attributes,
                 "auth_token": creds.authToken,
                 "auth_email": creds.authEmail
             },
@@ -49,5 +71,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action_name == "create") {
         createAutofillCombination(request.account, request.fields);
         return true;
+    }
+    else if (request.action_name == "checkAuth") {
+    	console.log(verifyAuth());
+    	return verifyAuth;
+    }
+    else {
+    	sendResponse({});
     }
 });

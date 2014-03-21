@@ -1,3 +1,4 @@
+// creates unique path to element
 jQuery.fn.getPath = function () {
     if (this.length != 1) throw 'Requires one element.';
 
@@ -22,12 +23,14 @@ jQuery.fn.getPath = function () {
     return path;
 };
 
+// function to find all forms in DOM with password field
 function findForms() {
     return $('form').filter(function () {
         return $(this).find('input[type=password]').length > 0;
     });
 }
 
+// function to return the password fields of a form
 function getPasswordFields(form) {
     return $(form).find('input[type=password]');
 }
@@ -49,35 +52,45 @@ function searchAcccountsForURL(searchTerm) {
     return dataArr;
 }
 
+// function to fille a path with a value
 function fillPathWithValue(path, val) {
     $(path).val(val);
 }
 
+// on submit of a form, check if account should be saved
 findForms().submit(function (event) {
     var formAttributes = [];
     var accountAttributes = {
         'name': document.title
     };
     if (confirm("Do you want to save this password in Securis?")) {
-        $(this).find('input[type!=hidden],select').each(function () {
-            formAttributes.push({
-                "autofill_path": $(this).getPath(),
-                "value": $(this).val(),
-                "name": $(this).prop("name"),
-                "is_secure": $(this).prop('type') == 'password'
-            });
-        });
-        formAttributes.push({
-            "name": "Website",
-            "value": document.URL,
-            "is_url": true
-        });
+    	chrome.runtime.sendMessage({action_name: "checkAuth"}, function (success) {
+    		if (success) {
+    			$(this).find('input[type!=hidden],select').each(function () {
+		            formAttributes.push({
+		                "autofill_path": $(this).getPath(),
+		                "value": $(this).val(),
+		                "name": $(this).prop("name"),
+		                "is_secure": $(this).prop('type') == 'password'
+		            });
+		        });
+		        formAttributes.push({
+		            "name": "Website",
+		            "value": document.URL,
+		            "is_url": true
+		        });
 
-        var message = {
-            action_name: "create",
-            account: accountAttributes,
-            fields: formAttributes
-        };
-        chrome.runtime.sendMessage(message, function (response) {});
+		        var message = {
+		            action_name: "create",
+		            account: accountAttributes,
+		            fields: formAttributes
+		        };
+		        chrome.runtime.sendMessage(message, function (response) {});
+		    }
+		    else {
+		    	alert("OPEN A NEW FUCKING TAB");
+		    	chrome.tabs.create({url: "loginPopup.html"});
+		    }
+		});  
     }
 });
