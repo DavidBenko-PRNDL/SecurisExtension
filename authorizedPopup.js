@@ -1,49 +1,54 @@
-var authToken = "";
-var authEmail = "";
-
 // check if logged in by sending get request
 function sendGet() {
-    // async for local storage, ensure both have loaded prior to get request
-    var getting = $.get("https://securis-debug.herokuapp.com/accounts.json", {
-            "auth_token": "",
-            "auth_email": ""
-        }, function(data) {
-            console.log(data)
-        });
+    getAuthCreds(function (creds) {
+        // async for local storage, ensure both have loaded prior to get request
+        var getting = $.get("https://securis-debug.herokuapp.com/accounts.json", {
+            "auth_token": creds.authToken,
+            "auth_email": creds.authEmail
+        }, function (data) {});
 
-    // if errors, incorrect auth_token or email, log in again
-    getting.error(function (data) {
-    	console.log(data)
-        window.location.replace("loginPopup.html");
+        // if errors, incorrect auth_token or email, log in again
+        getting.error(function (data) {
+            window.location.replace("loginPopup.html");
+        });
     });
 }
 sendGet();
 
-// // load auth_token and email from local storage
-// chrome.storage.local.get('authToken', function(items) {
-//         console.log(items.authToken);
-//         authToken = items.authToken;
-//         sendGet();
-//     });
-// chrome.storage.local.get('authEmail', function(items) {
-//         console.log(items.authEmail);
-//         authEmail = items.authEmail;
-//         sendGet();
-//     });
+// function to send DELETE request to logout of chrome extension
+function logout() {
+    getAuthCreds(function (creds) {
+        var params = {
+            "auth_token": creds.authToken,
+            "auth_email": creds.authEmail
+        }
 
-// console.log(authToken);
-// console.log(authEmail);
+        var logoutRequest = $.ajax({
+            type: "DELETE",
+            url: "https://securis-debug.herokuapp.com/api/sign_out",
+            data: params,
+            success: function (data) {
+                window.location.replace("loginPopup.html");
+            }
+        });
 
-//Open all links displayed on popup
-document.addEventListener('DOMContentLoaded', function () {
-    var links = document.getElementsByTagName("a");
-    for (var i = 0; i < links.length; i++) {
-        (function () {
-            var ln = links[i];
-            var location = ln.href;
-            ln.onclick = function () {
-                chrome.tabs.create({active: true, url: location});
-            };
-        })();
-    }
-});
+        logoutRequest.error(function (data) {
+            // log data when DELETE error
+            console.log(data);
+        });
+
+        return false;
+    });
+}
+$("#logoutButton").click(logout);
+
+// function to retrieve auth_token and auth_email from local storage
+function getAuthCreds(callback) {
+    chrome.storage.local.get(['authToken', 'authEmail'], function (items) {
+        if (chrome.runtime.lastError) {
+            window.location.replace("loginPopup.html");
+            return;
+        }
+        callback(items);
+    });
+}
