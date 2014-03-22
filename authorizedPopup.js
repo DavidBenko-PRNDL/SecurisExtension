@@ -1,12 +1,8 @@
 // check if logged in by sending get request
 function checkAuth() {
     chrome.runtime.sendMessage({action_name: "checkAuth"}, function (response) {
-        console.log(response);
-        ////
-        //// response is null... 
-        ////
         if (!response) {
-            //window.location.replace("loginPopup.html");
+            window.location.replace("loginPopup.html");
         }
     });
 }

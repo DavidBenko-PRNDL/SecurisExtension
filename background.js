@@ -6,24 +6,16 @@ function verifyAuth(callback) {
             "auth_token": creds.authToken,
             "auth_email": creds.authEmail
         }, function (data) {
-        	console.log("true!");
+            // login successful 
              callback(true);
         });
 
         // if errors, incorrect auth_token or email, log in again
         getting.fail(function (data) {
-        	console.log("false!");
             callback(false);
         });
-        ////
-        //// Not actually returning anything..just null
-        ////
     });
 }
-
-console.log("test here");
-// returning undefined before GET request even made. 
-console.log(verifyAuth());
 
 // function to send POST request to create account
 function createAccount(account_attributes, field_attributes, callback) {
@@ -81,13 +73,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     else if (request.action_name == "checkAuth") {
         
         verifyAuth(function(auth){
-            sendResponse({verified: auth});
+            sendResponse(auth);
         });
-        //sendResponse(verifyAuth());
-        // return true keeps connection open for response
+        // "return true" keeps connection open for response
     	return true;
     }
+    else if (request.action_name == "openLogin") {
+        chrome.tabs.create({'url': 'background.html', 'active':true});
+    }
     else {
+        // default
     	sendResponse({});
     }
 });

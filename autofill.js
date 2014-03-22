@@ -65,31 +65,30 @@ findForms().submit(function (event) {
     };
     if (confirm("Do you want to save this password in Securis?")) {
     	chrome.runtime.sendMessage({action_name: "checkAuth"}, function (success) {
-    		if (success) {
-    			$(this).find('input[type!=hidden],select').each(function () {
-		            formAttributes.push({
-		                "autofill_path": $(this).getPath(),
-		                "value": $(this).val(),
-		                "name": $(this).prop("name"),
-		                "is_secure": $(this).prop('type') == 'password'
-		            });
-		        });
-		        formAttributes.push({
-		            "name": "Website",
-		            "value": document.URL,
-		            "is_url": true
-		        });
+			$(this).find('input[type!=hidden],select').each(function () {
+	            formAttributes.push({
+	                "autofill_path": $(this).getPath(),
+	                "value": $(this).val(),
+	                "name": $(this).prop("name"),
+	                "is_secure": $(this).prop('type') == 'password'
+	            });
+	        });
+	        formAttributes.push({
+	            "name": "Website",
+	            "value": document.URL,
+	            "is_url": true
+	        });
 
-		        var message = {
-		            action_name: "create",
-		            account: accountAttributes,
-		            fields: formAttributes
-		        };
+	        var message = {
+	            action_name: "create",
+	            account: accountAttributes,
+	            fields: formAttributes
+	        };
+            if (success) {
 		        chrome.runtime.sendMessage(message, function (response) {});
 		    }
 		    else {
-		    	alert("OPEN A NEW FUCKING TAB");
-		    	chrome.tabs.create({url: "loginPopup.html"});
+		    	chrome.runtime.sendMessage({action_name: "openLogin"}, function (response) {});
 		    }
 		});  
     }
